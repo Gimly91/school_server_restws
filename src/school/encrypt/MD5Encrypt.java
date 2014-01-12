@@ -19,7 +19,7 @@ public class MD5Encrypt {
 			BigInteger hash = new BigInteger(1, md5.digest());
 			hashword = hash.toString(16);
 		} catch (NoSuchAlgorithmException nsae) {
-			LOGGER.log(Level.SEVERE, nsae.getMessage());
+			LOGGER.log(Level.SEVERE, nsae.getMessage(), nsae);
 		}
 		return hashword;
 	}
