@@ -4,18 +4,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static school.webservices.TestUtils.*;
-import static school.webservices.TestUtils.users;
+import static school.webservices.TestUtils.adminUser;
+import static school.webservices.TestUtils.unknownUser;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import school.db.UserDAO;
 import school.model.User;
 import school.webservice.UserCRUD;
 
@@ -25,40 +25,47 @@ public class TestUserCRUD {
 	public void read() {
 		List<User> usersT = new ArrayList<>();
 		usersT.add(adminUser);
-		usersT.add(simpleUser);
-		EntityManager em = Mockito.mock(EntityManager.class);
-		String q = "SELECT p from " + "user" + " p where p.username = :userN";
 		Query query = Mockito.mock(Query.class);
+		UserDAO userDAO = Mockito.mock(UserDAO.class);
+		userDAO.setQuery(query);
 
-		UserCRUD lb = new UserCRUD(em, q);
+		UserCRUD lb = new UserCRUD(userDAO);
 
-		Mockito.when(em.createQuery(q)).thenReturn(query);
-		Mockito.when(query.getResultList()).thenReturn(usersT);
+		Mockito.when(userDAO.getUser(adminUser.getUsername())).thenReturn(adminUser);
+		Mockito.when(userDAO.getUser(unknownUser.getUsername())).thenReturn(unknownUser);
 
 		assertEquals(adminUser, lb.read(adminUser.getUsername()));
-
-		usersT.remove(0);
-		usersT.remove(0);
-
-		assertNull(lb.read(adminUser.getUsername()));
+		assertNull(lb.read(unknownUser.getUsername()));
 	}
 
 	@Test
 	public void check() {
 		List<User> usersT = new ArrayList<>();
-		EntityManager em = Mockito.mock(EntityManager.class);
-		String q = "SELECT p from " + "user" + " p where p.username = :userN";
-		Query query = Mockito.mock(Query.class);
-
-		UserCRUD lb = new UserCRUD(em, q);
-
-		Mockito.when(em.createQuery(q)).thenReturn(query);
-		Mockito.when(query.getResultList()).thenReturn(usersT);
-
 		usersT.add(adminUser);
-		assertTrue(lb.checkUser(adminUser.getUsername()));
+		Query query = Mockito.mock(Query.class);
+		UserDAO userDAO = Mockito.mock(UserDAO.class);
+		userDAO.setQuery(query);
 
-		usersT.remove(0);
-		assertFalse(lb.checkUser(adminUser.getUsername()));
+		UserCRUD lb = new UserCRUD(userDAO);
+
+		Mockito.when(userDAO.getUser(adminUser.getUsername())).thenReturn(adminUser);
+		Mockito.when(userDAO.getUser(unknownUser.getUsername())).thenReturn(unknownUser);
+
+		assertTrue(lb.checkUser(adminUser.getUsername()));
+		assertFalse(lb.checkUser(unknownUser.getUsername()));
+	}
+
+	@Test
+	public void saveUser() {
+		List<User> usersT = new ArrayList<>();
+		usersT.add(adminUser);
+		Query query = Mockito.mock(Query.class);
+		UserDAO userDAO = Mockito.mock(UserDAO.class);
+		userDAO.setQuery(query);
+
+		UserCRUD lb = new UserCRUD(userDAO);
+
+		Mockito.when(userDAO.saveUser(adminUser)).thenReturn(true);
+		assertTrue(lb.create(adminUser));
 	}
 }

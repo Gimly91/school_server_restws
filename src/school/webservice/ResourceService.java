@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -15,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import school.db.ResourceDAO;
 import school.model.Image;
 import school.model.Levelresource;
 import school.model.Sound;
@@ -25,28 +25,26 @@ public class ResourceService {
 
 	@Inject
 	EntityManager em;
-	private Query query;
-	private String q_image = "SELECT p from " + "Image p";
-	private String q_sound = "SELECT p from " + "Sound p";
-	private String q_sound_id = q_sound + " where p.idsound=:id";
-	private String q_level_resources = "SELECT p from " + "Levelresource p";
-	private String q_image_name = q_image + " where p.path=:name";
-	private String q_level_res_id = q_level_resources + " where p.idLevel=:id and p.type=:type";
-	private String q_image_id = q_image + " where p.idimage=:id";
+	private ResourceDAO resourceDAO;
+	public final int ONE = 1;
+	public final int TWO = 2;
 
 	public ResourceService() {
 	}
 
-	@SuppressWarnings("unchecked")
+	public ResourceService(ResourceDAO uD) {
+		this.resourceDAO = uD;
+	}
+
 	@GET
 	@Path("/getImages/{id}")
 	public Response getImages(@PathParam("id") int id) {
 		List<Image> images = new ArrayList<>();
 		try {
-			for (Levelresource lr : getResources(id, 1)) {
-				query = em.createQuery(q_image_id);
-				query.setParameter("id", lr.getIdResource());
-				List<Image> imagesDB = query.getResultList();
+			List<Levelresource> lrs = getResources(id, ONE);
+			for (Levelresource lr : lrs) {
+				resourceDAO.setEm(em);
+				List<Image> imagesDB = resourceDAO.getImages(lr.getIdResource());
 				if (imagesDB.size() > 0) {
 					images.add(imagesDB.get(0));
 				}
@@ -62,16 +60,15 @@ public class ResourceService {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	@GET
 	@Path("/getSounds/{id}")
 	public Response getSounds(@PathParam("id") int id) {
 		List<Sound> sounds = new ArrayList<>();
 		try {
-			for (Levelresource lr : getResources(id, 2)) {
-				query = em.createQuery(q_sound_id);
-				query.setParameter("id", lr.getIdResource());
-				List<Sound> soundsDB = query.getResultList();
+			List<Levelresource> lrs = getResources(id, TWO);
+			for (Levelresource lr : lrs) {
+				resourceDAO.setEm(em);
+				List<Sound> soundsDB = resourceDAO.getSounds(lr.getIdResource());
 				if (soundsDB.size() > 0) {
 					sounds.add(soundsDB.get(0));
 				}
@@ -88,16 +85,13 @@ public class ResourceService {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	@GET
 	@Path("/getImage/{name}")
 	public Image getImage(@PathParam("name") String name) {
 		try {
-			query = em.createQuery(q_image_name);
-			query.setParameter("name", name);
-			List<Image> images = query.getResultList();
-			if (images.size() > 0) {
-				return images.get(0);
+			if (name != null) {
+				resourceDAO.setEm(em);
+				return resourceDAO.getImage(name);
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -105,13 +99,10 @@ public class ResourceService {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Levelresource> getResources(int id, int type) {
 		try {
-			query = em.createQuery(q_level_res_id);
-			query.setParameter("id", id);
-			query.setParameter("type", type);
-			List<Levelresource> levelR = query.getResultList();
+			resourceDAO.setEm(em);
+			List<Levelresource> levelR = resourceDAO.getResources(id, type);
 			if (levelR.size() > 0) {
 				return levelR;
 			}

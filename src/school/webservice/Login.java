@@ -2,42 +2,38 @@ package school.webservice;
 
 import java.util.List;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
+import school.db.UserDAO;
 import school.model.User;
 
 @Path("LogInService")
 public class Login {
 
-	@Inject
+	@PersistenceContext(unitName = "School")
 	EntityManager em;
-	private Query query;
-	private String q = "SELECT p from " + "User" + " p where p.username = :userN";
+	private UserDAO userDAO;
 
 	public Login() {
 	}
 
-	public Login(EntityManager em, String q) {
-		this.q = q;
-		this.em = em;
+	public Login(UserDAO userDAO) {
+		this.userDAO = userDAO;
 	}
 
 	// http://localhost:8080/SchoolServerRest/rest/LogInService/login/
-	@SuppressWarnings("unchecked")
 	@POST
 	@Path("/login")
 	@Consumes("application/json")
 	public String login(User user) {
 		try {
 			if (user.getUsername() != null && user.getPassword() != null) {
-				query = em.createQuery(q);
-				query.setParameter("userN", user.getUsername());
-				List<User> users = query.getResultList();
+				userDAO.setEm(em);
+				List<User> users = userDAO.getUsers(user);
 				if (users.size() > 0) {
 					User p = users.get(0);
 					if (p != null) {

@@ -5,28 +5,33 @@ import static school.webservices.TestUtils.adminUser;
 import static school.webservices.TestUtils.noUser;
 import static school.webservices.TestUtils.users;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import school.db.UserDAO;
+import school.model.User;
 import school.webservice.Login;
 
 public class TestLogin {
 
 	@Test
 	public void testLogIn() {
-		EntityManager em = Mockito.mock(EntityManager.class);
-		String q = "SELECT p from " + "user" + " p where p.username = :userN";
+		List<User> usersT = new ArrayList<>();
+		usersT.add(adminUser);
 		Query query = Mockito.mock(Query.class);
+		UserDAO userDAO = Mockito.mock(UserDAO.class);
+		userDAO.setQuery(query);
+		Login lb = new Login(userDAO);
 
-		Login lb = new Login(em, q);
+		Mockito.when(userDAO.getUsers(adminUser)).thenReturn(usersT);
 
-		Mockito.when(em.createQuery(q)).thenReturn(query);
-		Mockito.when(query.getResultList()).thenReturn(users);
-
-		users.add(adminUser);
+		usersT.add(adminUser);
 		assertEquals(adminUser.getType(), lb.login(adminUser));
 
 		users.remove(0);
