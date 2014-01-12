@@ -1,7 +1,7 @@
 package school.db;
 
 import static org.junit.Assert.*;
-import static school.webservice.WSUtils.q_user;
+import static school.webservice.WSUtils.Q_USER;
 import static school.webservices.TestUtils.adminUser;
 
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ public class TestUserDAO {
 		UserDAO lb = new UserDAO(em);
 		lb.setQuery(query);
 
-		Mockito.when(em.createQuery(q_user)).thenReturn(query);
+		Mockito.when(em.createQuery(Q_USER)).thenReturn(query);
 		Mockito.when(query.getResultList()).thenReturn(usersT);
 
 		assertEquals(adminUser, lb.getUser(adminUser.getUsername()));
@@ -44,7 +44,7 @@ public class TestUserDAO {
 		UserDAO lb = new UserDAO(em);
 		lb.setQuery(query);
 
-		Mockito.when(em.createQuery(q_user)).thenReturn(query);
+		Mockito.when(em.createQuery(Q_USER)).thenReturn(query);
 		Mockito.when(query.getResultList()).thenReturn(usersT);
 
 		assertEquals(usersT, lb.getUsers(adminUser));

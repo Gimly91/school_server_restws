@@ -1,6 +1,8 @@
 package school.webservice;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -9,6 +11,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 import school.db.UserDAO;
+import school.encrypt.MD5Encrypt;
 import school.model.User;
 
 @Path("LogInService")
@@ -17,6 +20,8 @@ public class Login {
 	@PersistenceContext(unitName = "School")
 	EntityManager em;
 	private UserDAO userDAO;
+	
+	final Logger LOGGER = Logger.getLogger(Login.class.getName());
 
 	public Login() {
 	}
@@ -34,7 +39,7 @@ public class Login {
 			if (user.getUsername() != null && user.getPassword() != null) {
 				userDAO.setEm(em);
 				List<User> users = userDAO.getUsers(user);
-				if (users.size() > 0) {
+				if (!users.isEmpty()) {
 					User p = users.get(0);
 					if (p != null) {
 						String pass = user.getPassword();
@@ -45,7 +50,7 @@ public class Login {
 				}
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return "noUser";
 	}

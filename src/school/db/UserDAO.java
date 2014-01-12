@@ -30,18 +30,17 @@ public class UserDAO {
 
 	@SuppressWarnings("unchecked")
 	public List<User> getUsers(User user) {
-		query = em.createQuery(q_user);
+		query = em.createQuery(Q_USER);
 		query.setParameter("userN", user.getUsername());
-		List<User> users = query.getResultList();
-		return users;
+		return query.getResultList();
 	}
 
 	@SuppressWarnings("unchecked")
 	public User getUser(String username) {
-		query = em.createQuery(q_user);
+		query = em.createQuery(Q_USER);
 		query.setParameter("userN", username);
 		List<User> users = query.getResultList();
-		if (users.size() > 0) {
+		if (!users.isEmpty()) {
 			return users.get(0);
 		}
 		return null;

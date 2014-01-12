@@ -8,6 +8,9 @@ import java.util.logging.Logger;
 
 public class MD5Encrypt {
 
+	private MD5Encrypt() {
+	}
+
 	public static String hashPassword(String password) {
 
 		final Logger LOGGER = Logger.getLogger(MD5Encrypt.class.getName());

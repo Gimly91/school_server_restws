@@ -2,6 +2,8 @@ package school.webservice;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -26,9 +28,11 @@ public class ResourceService {
 	@Inject
 	EntityManager em;
 	private ResourceDAO resourceDAO;
-	public final int ONE = 1;
-	public final int TWO = 2;
+	public static final int ONE = 1;
+	public static final int TWO = 2;
 
+	final Logger LOGGER = Logger.getLogger(ResourceService.class.getName());
+	
 	public ResourceService() {
 	}
 
@@ -45,7 +49,7 @@ public class ResourceService {
 			for (Levelresource lr : lrs) {
 				resourceDAO.setEm(em);
 				List<Image> imagesDB = resourceDAO.getImages(lr.getIdResource());
-				if (imagesDB.size() > 0) {
+				if (!imagesDB.isEmpty()) {
 					images.add(imagesDB.get(0));
 				}
 			}
@@ -55,7 +59,7 @@ public class ResourceService {
 				return Response.status(Status.BAD_REQUEST).entity(ge).build();
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return null;
 	}
@@ -69,7 +73,7 @@ public class ResourceService {
 			for (Levelresource lr : lrs) {
 				resourceDAO.setEm(em);
 				List<Sound> soundsDB = resourceDAO.getSounds(lr.getIdResource());
-				if (soundsDB.size() > 0) {
+				if (!soundsDB.isEmpty()) {
 					sounds.add(soundsDB.get(0));
 				}
 			}
@@ -80,7 +84,7 @@ public class ResourceService {
 				return Response.status(Status.BAD_REQUEST).entity(ge).build();
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return null;
 	}
@@ -94,7 +98,7 @@ public class ResourceService {
 				return resourceDAO.getImage(name);
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return null;
 	}
@@ -103,11 +107,11 @@ public class ResourceService {
 		try {
 			resourceDAO.setEm(em);
 			List<Levelresource> levelR = resourceDAO.getResources(id, type);
-			if (levelR.size() > 0) {
+			if (!levelR.isEmpty()) {
 				return levelR;
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return null;
 	}

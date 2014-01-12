@@ -1,10 +1,11 @@
 package school.db;
 
-import static org.junit.Assert.*;
-import static school.webservice.WSUtils.q_image_id;
-import static school.webservice.WSUtils.q_image_name;
-import static school.webservice.WSUtils.q_level_res_id;
-import static school.webservice.WSUtils.q_sound_id;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static school.webservice.WSUtils.Q_IMAGE_ID;
+import static school.webservice.WSUtils.Q_IMAGE_NAME;
+import static school.webservice.WSUtils.Q_LEVEL_RES_ID;
+import static school.webservice.WSUtils.Q_SOUND_ID;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,7 @@ public class TestResourceDAO {
 		ResourceDAO rD = new ResourceDAO(em);
 		rD.setQuery(query);
 
-		Mockito.when(em.createQuery(q_image_id)).thenReturn(query);
+		Mockito.when(em.createQuery(Q_IMAGE_ID)).thenReturn(query);
 		Mockito.when(query.getResultList()).thenReturn(images);
 
 		assertEquals(images, rD.getImages(image1.getIdimage()));
@@ -69,7 +70,7 @@ public class TestResourceDAO {
 		ResourceDAO rD = new ResourceDAO(em);
 		rD.setQuery(query);
 
-		Mockito.when(em.createQuery(q_sound_id)).thenReturn(query);
+		Mockito.when(em.createQuery(Q_SOUND_ID)).thenReturn(query);
 		Mockito.when(query.getResultList()).thenReturn(sounds);
 
 		assertEquals(sounds, rD.getSounds(sound1.getIdsound()));
@@ -83,7 +84,7 @@ public class TestResourceDAO {
 		ResourceDAO rD = new ResourceDAO(em);
 		rD.setQuery(query);
 
-		Mockito.when(em.createQuery(q_level_res_id)).thenReturn(query);
+		Mockito.when(em.createQuery(Q_LEVEL_RES_ID)).thenReturn(query);
 		Mockito.when(query.getResultList()).thenReturn(levelResources);
 
 		assertEquals(levelResources, rD.getResources(lr1.getIdLevel(), 1));
@@ -97,7 +98,7 @@ public class TestResourceDAO {
 		ResourceDAO rD = new ResourceDAO(em);
 		rD.setQuery(query);
 		images.add(image1);
-		Mockito.when(em.createQuery(q_image_name)).thenReturn(query);
+		Mockito.when(em.createQuery(Q_IMAGE_NAME)).thenReturn(query);
 		Mockito.when(query.getResultList()).thenReturn(images);
 
 		assertEquals(image1, rD.getImage(image1.getPath()));

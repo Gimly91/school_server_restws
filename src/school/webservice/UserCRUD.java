@@ -1,5 +1,8 @@
 package school.webservice;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
@@ -19,6 +22,8 @@ public class UserCRUD {
 	@PersistenceContext(unitName = "School")
 	EntityManager em;
 
+	private static final Logger LOGGER = Logger.getLogger(UserCRUD.class.getName());
+	
 	private UserDAO userDAO;
 
 	public UserCRUD() {
@@ -39,7 +44,7 @@ public class UserCRUD {
 				return userDAO.getUser(username);
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return null;
 	}
@@ -57,7 +62,7 @@ public class UserCRUD {
 				}
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return false;
 	}
